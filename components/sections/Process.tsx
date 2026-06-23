@@ -1,8 +1,15 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { motion } from "framer-motion";
 import { Compass, Map, Palette, Code, CheckCircle, Rocket } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const stages = [
   {
@@ -45,29 +52,45 @@ const stages = [
 
 export default function Process() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const progressLineRef = useRef<HTMLDivElement>(null);
+  const activeIndexRef = useRef(0);
   
-  // Track scroll progress within this section. 
-  // "start start" means progress starts when top of container hits top of viewport.
-  // "end end" means progress reaches 1 when bottom of container hits bottom of viewport.
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Update active stage based on scroll percentage
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    // 0 to 0.999 maps to 0 to 5
-    const index = Math.min(5, Math.floor(latest * 6));
-    setActiveIndex(index);
-  });
+  useGSAP(() => {
+    // Tween for the progress line
+    gsap.to(progressLineRef.current, {
+      scaleX: 1,
+      ease: "none",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "+=3000",
+        pin: true,
+        pinSpacing: true,
+        scrub: true,
+        anticipatePin: 1,
+        onUpdate: (self) => {
+          const newIndex = Math.min(5, Math.floor(self.progress * 6));
+          if (newIndex !== activeIndexRef.current) {
+            activeIndexRef.current = newIndex;
+            setActiveIndex(newIndex);
+          }
+        }
+      }
+    });
+
+    // Refresh ScrollTrigger after a slight delay to account for Framer Motion layout shifts
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, { scope: containerRef });
 
   return (
-    <section id="process" ref={containerRef} className="relative w-full bg-white md:h-[400vh]">
-      
-      {/* Sticky Container for Desktop / Normal block for Mobile */}
-      <div className="md:sticky md:top-0 w-full md:h-screen flex items-center justify-center overflow-hidden py-20 md:py-0">
+    <section id="process" className="relative w-full bg-white">
+      <div ref={containerRef} className="w-full md:h-screen flex items-center justify-center overflow-hidden py-20 md:py-0">
         
         {/* Background Ambience */}
         <div className="absolute top-[30%] left-[50%] -translate-x-1/2 w-[1000px] h-[600px] bg-[var(--color-accent)]/5 blur-[150px] rounded-full pointer-events-none z-0" />
@@ -119,9 +142,10 @@ export default function Process() {
               <div className="absolute top-[28px] md:top-[34px] left-[8%] md:left-[60px] right-[8%] md:right-[60px] h-px bg-[#E8E8E8] z-0" />
               
               {/* The Animated Progress Line */}
-              <motion.div 
+              <div 
+                ref={progressLineRef}
                 className="absolute top-[28px] md:top-[34px] left-[8%] md:left-[60px] right-[8%] md:right-[60px] h-px bg-[var(--color-accent)] z-10 origin-left"
-                style={{ scaleX: scrollYProgress }}
+                style={{ transform: `scaleX(0)` }}
               />
 
               {/* The Stages */}

@@ -56,7 +56,7 @@ const capabilities = [
 ];
 
 export default function Services() {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
   return (
     <section id="services" className="relative py-20 w-full bg-[#FAFAF8] overflow-hidden min-h-[850px] xl:min-h-screen flex items-center justify-center">
@@ -114,7 +114,13 @@ export default function Services() {
               return (
                 <div 
                   key={item.id}
-                  onClick={() => setActiveIndex(i)}
+                  onClick={() => {
+                    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+                      setActiveIndex(activeIndex === i ? null : i);
+                    } else {
+                      setActiveIndex(i);
+                    }
+                  }}
                   onMouseEnter={() => {
                     // Only trigger hover state changes on desktop
                     if (window.innerWidth >= 1024) {
@@ -189,27 +195,29 @@ export default function Services() {
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[var(--color-accent)]/15 blur-[80px] rounded-full pointer-events-none z-0" />
 
               <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeIndex}
-                  initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -20, filter: "blur(4px)" }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="relative z-10 flex flex-col items-start"
-                >
-                  <div className="w-20 h-20 rounded-2xl bg-[#F4F0FF] flex items-center justify-center mb-8 shadow-sm">
-                    {(() => {
-                      const Icon = capabilities[activeIndex].icon;
-                      return <Icon className="w-10 h-10 text-[var(--color-accent)]" strokeWidth={1.5} />;
-                    })()}
-                  </div>
-                  <h3 className="text-3xl md:text-[40px] font-medium tracking-tight text-[#1A1A1A] mb-4">
-                    {capabilities[activeIndex].title}
-                  </h3>
-                  <p className="text-[#666666] text-lg leading-relaxed">
-                    {capabilities[activeIndex].description}
-                  </p>
-                </motion.div>
+                {activeIndex !== null && (
+                  <motion.div
+                    key={activeIndex}
+                    initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, y: -20, filter: "blur(4px)" }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="relative z-10 flex flex-col items-start"
+                  >
+                    <div className="w-20 h-20 rounded-2xl bg-[#F4F0FF] flex items-center justify-center mb-8 shadow-sm">
+                      {(() => {
+                        const Icon = capabilities[activeIndex].icon;
+                        return <Icon className="w-10 h-10 text-[var(--color-accent)]" strokeWidth={1.5} />;
+                      })()}
+                    </div>
+                    <h3 className="text-3xl md:text-[40px] font-medium tracking-tight text-[#1A1A1A] mb-4">
+                      {capabilities[activeIndex].title}
+                    </h3>
+                    <p className="text-[#666666] text-lg leading-relaxed">
+                      {capabilities[activeIndex].description}
+                    </p>
+                  </motion.div>
+                )}
               </AnimatePresence>
             </div>
           </div>
