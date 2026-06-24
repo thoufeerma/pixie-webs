@@ -51,6 +51,7 @@ export default function Navbar() {
         {/* Centered Navigation Links */}
         <nav className="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2">
           {[
+            { title: "Home", href: "/" },
             { title: "Why Us", href: "#why-us" },
             { title: "Services", href: "#services" },
             { title: "Process", href: "#process" },

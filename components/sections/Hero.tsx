@@ -79,7 +79,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1], delay: 0.3 }}
-            className="text-[12vw] sm:text-[10vw] lg:text-[7rem] leading-[0.95] tracking-tighter uppercase font-medium text-[#1A1A1A] mb-6 md:mb-8 w-full break-words"
+            className="text-[12vw] sm:text-[10vw] lg:text-[5.5rem] xl:text-[6.5rem] leading-[0.95] tracking-tighter uppercase font-medium text-[#1A1A1A] mb-6 md:mb-8 w-full"
           >
             CRAFTING<br className="lg:hidden" /> DIGITAL<br />EXPERIENCES
           </motion.h1>

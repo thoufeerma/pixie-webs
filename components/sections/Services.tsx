@@ -65,23 +65,15 @@ export default function Services() {
       <div className="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none z-0" />
       <div className="absolute top-[20%] left-[10%] w-[800px] h-[800px] bg-[var(--color-accent)]/5 blur-[150px] rounded-full pointer-events-none z-0" />
 
+      {/* Background Typography */}
+      <div className="absolute top-[10%] lg:top-1/2 left-1/2 -translate-x-1/2 lg:-translate-y-1/2 font-black text-[150px] md:text-[220px] lg:text-[280px] leading-none text-black/[0.04] tracking-tighter pointer-events-none whitespace-nowrap z-0 select-none">
+        SERVICES
+      </div>
+
       <div className="max-w-[1400px] w-full mx-auto px-6 md:px-12 relative z-10 flex flex-col items-center">
         
         {/* Section Header */}
         <div className="mb-12 flex flex-col items-center text-center">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
-            className="flex items-center gap-3 mb-4"
-          >
-            <div className="w-2 h-2 rounded-full bg-[var(--color-accent)]" />
-            <h2 className="text-xs font-bold tracking-widest uppercase text-[var(--color-muted)]">
-              OUR CAPABILITIES
-            </h2>
-            <div className="w-2 h-2 rounded-full bg-[var(--color-accent)]" />
-          </motion.div>
           
           <motion.h3
             initial={{ opacity: 0, y: 30 }}

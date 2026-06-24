@@ -4,7 +4,15 @@ import { ArrowUpRight } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="relative bg-[var(--color-foreground)] text-white pt-32 pb-12 px-6 md:px-12 rounded-t-[40px] md:rounded-t-[80px] mt-20 z-50 overflow-hidden">
-      <div className="max-w-7xl mx-auto flex flex-col justify-between min-h-[50vh]">
+      
+      {/* Massive Background Typography */}
+      <div className="absolute bottom-[15%] md:bottom-[20%] right-0 pointer-events-none select-none z-0 flex justify-end w-full overflow-hidden">
+        <span className="font-black text-[22vw] md:text-[15vw] leading-[0.8] text-white/[0.05] tracking-tighter whitespace-nowrap pr-4 md:pr-8">
+          PIXIE WEBS
+        </span>
+      </div>
+
+      <div className="max-w-7xl mx-auto flex flex-col justify-between min-h-[50vh] relative z-10">
         
         <div className="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-8 mb-20">
           <div className="md:col-span-6 flex flex-col justify-between">
@@ -52,11 +60,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-[15vw] md:text-[10rem] font-bold tracking-tighter leading-none select-none text-white/5 w-full text-center md:text-left absolute bottom-0 left-0 md:left-12 pointer-events-none">
-            PIXIE WEBS
-          </p>
-          
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 mt-12 md:mt-0">
           <div className="w-full flex flex-col md:flex-row justify-between items-center z-10 text-white/50 text-sm">
             <p>&copy; {new Date().getFullYear()} PIXIE WEBS. All rights reserved.</p>
             <div className="flex gap-6 mt-4 md:mt-0">

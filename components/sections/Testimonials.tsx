@@ -46,26 +46,16 @@ export default function Testimonials() {
     <section id="testimonials" className="relative py-20 md:py-40 bg-[#F7F7F5] overflow-hidden w-full">
       
       {/* Background Typography */}
-      <div className="bg-typography">VOICES</div>
+      <div className="absolute top-[10%] md:top-1/4 left-1/2 -translate-x-1/2 font-black text-[150px] md:text-[250px] lg:text-[300px] leading-none text-black/[0.04] tracking-tighter pointer-events-none whitespace-nowrap z-0 select-none">
+        REVIEWS
+      </div>
 
       {/* Subtle Radial Glow */}
       <div className="radial-glow bg-[var(--color-accent)] w-[300px] h-[300px] md:w-[600px] md:h-[600px] bottom-[10%] left-[-10%]" />
 
       <div className="px-6 md:px-12 max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-24 relative z-10">
         <div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
-            className="flex items-center gap-3 mb-6 md:mb-8"
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)]" />
-            <h2 className="text-xs md:text-sm font-bold tracking-widest uppercase text-[var(--color-muted)]">
-              Client Voices
-            </h2>
-          </motion.div>
-
+          
           <motion.h3
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
