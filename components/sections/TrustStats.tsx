@@ -51,8 +51,8 @@ const stats = [
 export default function TrustStats() {
   return (
     <section className="w-full bg-white border-t border-b border-[#EAEAEA]">
-      <div className="max-w-[1400px] mx-auto px-2 md:px-12 py-12 md:py-20">
-        <div className="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-12 lg:gap-8">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-12 py-12 md:py-20">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-12 lg:gap-8">
           {stats.map((stat, index) => (
             <motion.div
               key={index}
@@ -63,11 +63,11 @@ export default function TrustStats() {
               className="flex flex-col items-center text-center group cursor-default"
             >
               <div className="transition-transform duration-300 ease-out group-hover:scale-[1.03]">
-                <span className="block text-[24px] sm:text-[32px] md:text-[64px] font-bold tracking-tighter text-[#1A1A1A] group-hover:text-[var(--color-accent)] transition-colors duration-300 ease-out leading-none mb-1 md:mb-3">
+                <span className="block text-[32px] sm:text-[40px] md:text-[64px] font-bold tracking-tighter text-[#1A1A1A] group-hover:text-[var(--color-accent)] transition-colors duration-300 ease-out leading-none mb-1 md:mb-3">
                   <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                 </span>
               </div>
-              <span className="text-[9px] sm:text-[11px] md:text-[15px] font-medium text-[#666666] group-hover:text-[#1A1A1A] transition-colors duration-300 ease-out whitespace-pre-line leading-tight">
+              <span className="text-[11px] sm:text-[13px] md:text-[15px] font-medium text-[#666666] group-hover:text-[#1A1A1A] transition-colors duration-300 ease-out whitespace-pre-line leading-tight">
                 {stat.label}
               </span>
             </motion.div>

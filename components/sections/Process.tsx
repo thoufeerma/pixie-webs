@@ -88,42 +88,85 @@ export default function Process() {
       }
     });
 
-    // Cinematic Parallax Setup
-    // Cards start off-screen below, scaled down slightly
-    gsap.set(".process-card", { yPercent: 100, scale: 0.97, opacity: 0 });
-    gsap.set(".process-card .card-content-item", { y: 30, opacity: 0 });
-    
-    // Card 0 starts visible
-    gsap.set(".process-card-0", { yPercent: 0, scale: 1, opacity: 1 });
-    gsap.set(".process-card-0 .card-content-item", { y: 0, opacity: 1 });
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
-    const transDur = 2.0; // Longer transition duration for fluidity
-    const holdDur = 1.5;
+    // --- MOBILE: Stacking card effect ---
+    if (isMobile) {
+      // Each card starts fully off screen below
+      gsap.set(".process-card", { y: "110%", scale: 1, opacity: 1 });
+      gsap.set(".process-card .card-content-item", { y: 20, opacity: 0 });
 
-    // A helper function to build the overlapping transition between two cards
-    const createTransition = (outIndex: number, inIndex: number, startTime: number) => {
-      // Outgoing card slowly moves up and fades slightly
-      tl.to(`.process-card-${outIndex}`, { yPercent: -35, scale: 0.97, opacity: 0.3, ease: "power2.inOut", duration: transDur }, startTime);
-      tl.to(`.process-card-${outIndex} .card-content-item`, { y: -20, opacity: 0, ease: "power2.inOut", duration: transDur * 0.8, stagger: 0.05 }, startTime);
-      
-      // Incoming card rises from below and covers it
-      tl.to(`.process-card-${inIndex}`, { yPercent: 0, scale: 1, opacity: 1, ease: "power2.inOut", duration: transDur }, startTime);
-      tl.to(`.process-card-${inIndex} .card-content-item`, { y: 0, opacity: 1, ease: "power2.out", duration: transDur * 0.8, stagger: 0.1 }, startTime + (transDur * 0.2));
-    };
+      // Card 0 starts in place
+      gsap.set(".process-card-0", { y: 0 });
+      gsap.set(".process-card-0 .card-content-item", { y: 0, opacity: 1 });
 
-    // Timeline execution
-    let t = holdDur; // 1.5
-    createTransition(0, 1, t);
-    
-    t += transDur + holdDur; // 1.5 + 2.0 + 1.5 = 5.0
-    createTransition(1, 2, t);
-    
-    t += transDur + holdDur; // 5.0 + 2.0 + 1.5 = 8.5
-    createTransition(2, 3, t);
+      const transDur = 1.8;
+      const holdDur = 1.5;
+      // Each previous card gets pushed up by PEEK_OFFSET px and slightly scaled down
+      const PEEK_OFFSET = 44; // px — carefully calculated to fit exactly 3 peek strips without overflowing
 
-    // End pause
-    t += transDur + holdDur; // 12.0
-    tl.to({}, { duration: holdDur }, t);
+      const createMobileTransition = (outIndex: number, inIndex: number, startTime: number) => {
+        // All cards before the new active one re-stack (shift up one more level)
+        for (let k = 0; k < outIndex; k++) {
+          const stackLevel = outIndex - k; // distance from top
+          tl.to(`.process-card-${k}`, {
+            y: -(PEEK_OFFSET * (stackLevel + 1)),
+            scale: 1 - (stackLevel + 1) * 0.04,
+            opacity: 1 - (stackLevel) * 0.15,
+            ease: "power3.inOut",
+            duration: transDur,
+          }, startTime);
+        }
+        // Outgoing active card slides to its new stacked position (top of stack)
+        tl.to(`.process-card-${outIndex}`, {
+          y: -PEEK_OFFSET,
+          scale: 0.96,
+          opacity: 0.85,
+          ease: "power3.inOut",
+          duration: transDur,
+        }, startTime);
+        tl.to(`.process-card-${outIndex} .card-content-item`, { y: -10, opacity: 0, ease: "power2.inOut", duration: transDur * 0.6, stagger: 0.04 }, startTime);
+
+        // New active card rises from below
+        tl.to(`.process-card-${inIndex}`, { y: 0, scale: 1, opacity: 1, ease: "power3.inOut", duration: transDur }, startTime);
+        tl.to(`.process-card-${inIndex} .card-content-item`, { y: 0, opacity: 1, ease: "power2.out", duration: transDur * 0.7, stagger: 0.08 }, startTime + transDur * 0.25);
+      };
+
+      let t = holdDur;
+      createMobileTransition(0, 1, t);
+      t += transDur + holdDur;
+      createMobileTransition(1, 2, t);
+      t += transDur + holdDur;
+      createMobileTransition(2, 3, t);
+      t += transDur + holdDur;
+      tl.to({}, { duration: holdDur }, t);
+
+    } else {
+      // --- DESKTOP: Original cinematic parallax ---
+      gsap.set(".process-card", { yPercent: 100, scale: 0.97, opacity: 0 });
+      gsap.set(".process-card .card-content-item", { y: 30, opacity: 0 });
+      gsap.set(".process-card-0", { yPercent: 0, scale: 1, opacity: 1 });
+      gsap.set(".process-card-0 .card-content-item", { y: 0, opacity: 1 });
+
+      const transDur = 2.0;
+      const holdDur = 1.5;
+
+      const createTransition = (outIndex: number, inIndex: number, startTime: number) => {
+        tl.to(`.process-card-${outIndex}`, { yPercent: -35, scale: 0.97, opacity: 0.3, ease: "power2.inOut", duration: transDur }, startTime);
+        tl.to(`.process-card-${outIndex} .card-content-item`, { y: -20, opacity: 0, ease: "power2.inOut", duration: transDur * 0.8, stagger: 0.05 }, startTime);
+        tl.to(`.process-card-${inIndex}`, { yPercent: 0, scale: 1, opacity: 1, ease: "power2.inOut", duration: transDur }, startTime);
+        tl.to(`.process-card-${inIndex} .card-content-item`, { y: 0, opacity: 1, ease: "power2.out", duration: transDur * 0.8, stagger: 0.1 }, startTime + (transDur * 0.2));
+      };
+
+      let t = holdDur;
+      createTransition(0, 1, t);
+      t += transDur + holdDur;
+      createTransition(1, 2, t);
+      t += transDur + holdDur;
+      createTransition(2, 3, t);
+      t += transDur + holdDur;
+      tl.to({}, { duration: holdDur }, t);
+    }
 
     // Ensure GSAP recalculates trigger positions exactly once after all layout-shifting assets load
     let refreshed = false;
@@ -175,12 +218,12 @@ export default function Process() {
       <div className="w-full h-full relative flex flex-col md:flex-row bg-[#F8F9FA] z-20">
         
         {/* Background Typography */}
-        <div className="absolute top-[40%] md:top-[50%] left-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-[120px] sm:text-[200px] md:text-[300px] lg:text-[450px] leading-none text-black/[0.03] tracking-tighter pointer-events-none whitespace-nowrap z-0 select-none">
+        {/* <div className="absolute top-[40%] md:top-[50%] left-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-[120px] sm:text-[200px] md:text-[300px] lg:text-[450px] leading-none text-black/[0.03] tracking-tighter pointer-events-none whitespace-nowrap z-0 select-none">
           WORKFLOW
-        </div>
+        </div> */}
 
         {/* LEFT COLUMN: Visual Canvas / Navigation */}
-        <div className="w-full h-[45%] md:h-full md:w-[40%] lg:w-[45%] flex flex-col p-6 md:p-12 xl:p-20 pb-12 md:pb-24 xl:pb-32 relative z-10 border-b md:border-b-0 md:border-r border-[#E8E8E8]/50 overflow-visible">
+        <div className="w-full h-auto md:h-full md:w-[40%] lg:w-[45%] flex flex-col p-6 md:p-12 xl:p-20 pb-8 md:pb-24 xl:pb-32 relative z-10 border-b md:border-b-0 md:border-r border-[#E8E8E8]/50 overflow-visible">
           
           {/* Top Content: Header & Indicator */}
           <div className="mt-2 md:mt-12 xl:mt-20 shrink-0 flex flex-col gap-6 md:gap-12">
@@ -202,13 +245,15 @@ export default function Process() {
             </div>
           </div>
 
-          {/* 3D Visual Canvas (Spline Orb) */}
-          <ProcessVisualCanvas activeIndex={activeIndex} />
+          {/* 3D Visual Canvas (Spline Orb) - Hidden on mobile */}
+          <div className="hidden md:block flex-1 w-full relative">
+            <ProcessVisualCanvas activeIndex={activeIndex} />
+          </div>
           
         </div>
 
         {/* RIGHT COLUMN: Scrolling Cards */}
-        <div className="w-full h-[55%] md:h-full md:w-[60%] lg:w-[55%] relative z-10 flex items-center justify-center p-4 md:p-8 xl:p-12 overflow-hidden perspective-[1000px]">
+        <div className="w-full flex-1 md:flex-none md:h-full md:w-[60%] lg:w-[55%] relative z-10 flex items-end md:items-center justify-center p-4 md:p-8 xl:p-12 overflow-visible md:overflow-hidden perspective-[1000px]">
           
           {/* Subtle radial glow locked behind the active card */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-[var(--color-accent)]/10 blur-[120px] rounded-full pointer-events-none z-0" />
@@ -219,21 +264,36 @@ export default function Process() {
               <div 
                 key={stage.id} 
                 style={{ zIndex: i + 10 }}
-                className={`process-card process-card-${i} absolute top-0 bottom-0 left-0 right-0 m-auto w-[90%] md:w-[80%] xl:w-[75%] h-[85%] md:h-[75%] xl:h-[70%] rounded-[24px] md:rounded-[32px] p-6 sm:p-8 md:p-10 flex flex-col justify-center gap-5 md:gap-8 group will-change-transform z-10 overflow-hidden transition-colors duration-1000 ease-out ${
+                className={`process-card process-card-${i} absolute top-[140px] bottom-4 left-0 right-0 md:top-0 md:bottom-0 md:m-auto mx-auto w-[92%] md:w-[80%] xl:w-[75%] md:h-[75%] xl:h-[70%] rounded-[20px] md:rounded-[32px] flex flex-col will-change-transform overflow-hidden transition-colors duration-1000 ease-out ${
                   isActive 
-                    ? "bg-[rgba(255,255,255,0.75)] shadow-[0_40px_100px_-10px_rgba(0,0,0,0.08)] border-[rgba(255,255,255,0.35)]" 
-                    : "bg-[rgba(255,255,255,0.65)] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.03)] border-[rgba(255,255,255,0.25)]"
+                    ? "bg-[rgba(255,255,255,0.92)] shadow-[0_40px_100px_-10px_rgba(0,0,0,0.1)] border-[rgba(255,255,255,0.4)]" 
+                    : "bg-[rgba(255,255,255,0.8)] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.06)] border-[rgba(255,255,255,0.35)]"
                 } backdrop-blur-[24px] border`}
               >
                 
+                {/* Peek Strip — always visible at top even when card is stacked behind */}
+                <div className="flex items-center justify-between px-5 pt-4 pb-3 md:px-8 md:pt-6 shrink-0 border-b border-black/[0.04] md:border-transparent">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[var(--color-accent)] font-bold tracking-widest text-[10px] uppercase">
+                      Stage {stage.id}
+                    </span>
+                    <span className="text-[#1A1A1A]/50 text-[10px] font-medium">/</span>
+                    <span className="text-[#1A1A1A] font-semibold text-sm tracking-tight">{stage.title}</span>
+                  </div>
+                  <stage.icon className="w-4 h-4 text-[var(--color-accent)]/60 md:hidden" strokeWidth={1.5} />
+                </div>
+
+                {/* Main Card Content */}
+                <div className="flex flex-col justify-center gap-4 md:gap-8 group flex-1 p-5 sm:p-8 md:p-10 md:pt-6">
+
                 {/* Premium Glass Top Highlight */}
                 <div className="absolute inset-0 rounded-[inherit] pointer-events-none bg-gradient-to-b from-white/40 via-white/5 to-transparent opacity-60 mix-blend-overlay" />
 
                 {/* Subtle purple glow inside the card */}
                 <div className={`absolute top-0 right-0 w-[300px] h-[300px] bg-[var(--color-accent)]/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none transition-opacity duration-1000 ${isActive ? "opacity-100" : "opacity-30"}`} />
 
-              {/* Header */}
-              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-6 relative z-10">
+              {/* Header — hidden on mobile (shown in peek strip) */}
+              <div className="hidden md:flex md:flex-row md:items-start justify-between gap-6 relative z-10">
                 <div className="flex flex-col">
                   <span className="text-[var(--color-accent)] font-bold tracking-widest text-[10px] md:text-xs mb-2 md:mb-4 uppercase card-content-item inline-block origin-left">
                     Stage {stage.id}
@@ -264,6 +324,7 @@ export default function Process() {
                   </div>
                 ))}
               </div>
+              </div>{/* end Main Card Content */}
               </div>
             );
           })}

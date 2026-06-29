@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/layout/SmoothScroll";
-import ScrollProgressIndicator from "@/components/ui/ScrollProgressIndicator";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 
 const inter = Inter({
@@ -36,7 +35,6 @@ export default function RootLayout({
       <body>
         <SmoothScroll>
           <div className="noise-bg" />
-          <ScrollProgressIndicator />
           <Navbar />
           {children}
           <Footer />

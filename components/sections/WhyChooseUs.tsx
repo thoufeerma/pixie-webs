@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Target, Puzzle, Sparkles, Code2, Gauge, Headset } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -109,8 +109,24 @@ export default function WhyChooseUs() {
   const containerRef = useRef<HTMLDivElement>(null);
   const activeIndexRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const [clickedIndex, setClickedIndex] = useState<number | null>(null);
 
-  const activeSection = sections[activeIndex];
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1280);
+    handleResize(); // set initially
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const wheelIndex = clickedIndex !== null ? clickedIndex : activeIndex;
+  const displayIndex = hoverIndex !== null ? hoverIndex : wheelIndex;
+  
+  const rotationOffset = isMobile ? 180 : 90;
+  
+  const activeSection = sections[displayIndex];
 
   // SVG Config
   const size = 440;
@@ -120,10 +136,13 @@ export default function WhyChooseUs() {
   const rInner = 68;
   const gapAngle = 2; // total gap is 2 degrees
   const sliceAngle = 360 / sections.length;
+  
+  // Store ScrollTrigger instance to allow click-to-scroll
+  const stRef = useRef<ScrollTrigger | null>(null);
 
   // GSAP animation for scroll pinning and discrete state updates
   useGSAP(() => {
-    ScrollTrigger.create({
+    stRef.current = ScrollTrigger.create({
       trigger: containerRef.current,
       start: "top top",
       end: () => "+=" + (window.innerHeight * 6),
@@ -133,11 +152,11 @@ export default function WhyChooseUs() {
       anticipatePin: 1,
       onUpdate: (self) => {
         // Map scroll progress strictly to 6 discrete chunks
-        // 0% -> 0, 16.66% -> 1, 33.33% -> 2, 50% -> 3, 66.66% -> 4, 83.33% -> 5
         const newIndex = Math.min(5, Math.floor(self.progress * 6));
         if (newIndex !== activeIndexRef.current) {
           activeIndexRef.current = newIndex;
           setActiveIndex(newIndex);
+          setClickedIndex(null); // clear the click override when user scrolls
         }
       }
     });
@@ -149,8 +168,12 @@ export default function WhyChooseUs() {
     return () => clearTimeout(timer);
   }, { scope: containerRef, dependencies: [] });
 
+  const handleSliceClick = (index: number) => {
+    setClickedIndex(index);
+  };
+
   return (
-    <section id="why-us" className="relative w-full bg-[#F8F9FA]">
+    <section id="why-us" className="relative w-full bg-[#F8F9FA] py-10">
       <div ref={containerRef} className="w-full h-screen overflow-hidden flex items-center justify-center relative bg-[#F8F9FA] z-20">
         
         {/* Background Ambience */}
@@ -159,46 +182,30 @@ export default function WhyChooseUs() {
         <div className="absolute top-[40%] right-[5%] w-[800px] h-[800px] bg-[var(--color-accent)]/10 blur-[150px] rounded-full pointer-events-none z-0" />
 
         {/* Background Typography */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-[180px] md:text-[250px] xl:text-[300px] leading-none text-black/[0.04] tracking-tighter pointer-events-none whitespace-nowrap z-0 select-none">
+        {/* <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-black text-[180px] md:text-[250px] xl:text-[300px] leading-none text-black/[0.04] tracking-tighter pointer-events-none whitespace-nowrap z-0 select-none">
           WHY US
-        </div>
+        </div> */}
 
         <div className="max-w-[1600px] w-full mx-auto px-6 md:px-12 relative z-10 flex flex-col justify-center">
           
-          {/* HEADER TEXT (Top Left) */}
-          <div className="w-full xl:w-[45%] flex flex-col items-center xl:items-start text-center xl:text-left z-20 shrink-0 mb-8 xl:mb-4">
-            <motion.h2 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1], delay: 0.1 }}
-              className="text-4xl md:text-[52px] leading-[1.1] tracking-tight font-medium mb-5 text-[#1A1A1A]"
-            >
-              More than just<br/>a digital agency.
-            </motion.h2>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1], delay: 0.2 }}
-              className="text-base text-[#666666] max-w-[28rem] leading-relaxed"
-            >
-              We build websites that combine strategy, design, and performance.
-            </motion.p>
+          {/* HEADER TEXT (Top Left - Workflow Design) */}
+          <div className=" top-6 md:top-12 left-6 md:left-12 z-20 shrink-0 text-left lg:text-center mt-10">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-[#1A1A1A] mb-4">
+              Why Us.
+            </h2>
           </div>
 
-          <div className="flex flex-col xl:flex-row gap-12 xl:gap-8 items-center justify-between w-full">
+          <div className="flex flex-col xl:flex-row gap-2 xl:gap-24 items-center justify-center w-full">
             
             {/* LEFT COLUMN: Radial Navigation */}
-            <div className="w-full xl:w-[45%] flex justify-center xl:justify-start z-20 shrink-0">
+            <div className="w-full xl:w-[45%] flex justify-center xl:justify-end z-20 shrink-0">
               {/* Radial Navigation (SVG) */}
               <div className="relative w-full max-w-[320px] xl:max-w-[440px] aspect-square flex items-center justify-center">
               <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-full overflow-visible drop-shadow-sm">
                 
                 {/* Rotating Wheel Group */}
                 <motion.g 
-                  animate={{ rotate: activeIndex * sliceAngle }}
+                  animate={{ rotate: activeIndex * sliceAngle + rotationOffset }}
                   transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
                   style={{ transformOrigin: `${cx}px ${cy}px` }}
                 >
@@ -214,31 +221,29 @@ export default function WhyChooseUs() {
                     const textRadius = rInner + (rOuter - rInner) / 2;
                     const centerPos = polarToCartesian(cx, cy, textRadius, midAngle);
                     
-                    const isActive = activeIndex === i;
+                    const isDisplayed = displayIndex === i;
 
-                    // Active slice pushes outwards slightly
-                    const pushOutDist = isActive ? 12 : 0;
-                    const pushOutPos = polarToCartesian(0, 0, pushOutDist, midAngle); 
-
+                    // Active slice does not push out to maintain perfect wheel alignment
                     return (
                       <motion.g 
                         key={i}
-                        animate={{ 
-                          x: pushOutPos.x, 
-                          y: pushOutPos.y,
-                          opacity: isActive ? 1 : 0.4
-                        }}
+                        animate={{ opacity: 1 }}
                         transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
+                        className="cursor-pointer"
+                        onMouseEnter={() => setHoverIndex(i)}
+                        onMouseLeave={() => setHoverIndex(null)}
+                        onClick={() => handleSliceClick(i)}
                       >
                         {/* The slice background */}
                         <path 
                           d={pathData} 
-                          className={`transition-colors duration-500 ${isActive ? 'fill-[#F4F0FF] stroke-[var(--color-accent)] stroke-[2px]' : 'fill-[#FFFFFF] stroke-[#E8E8E8] stroke-[1px]'}`}
+                          className={`transition-colors duration-500 ${isDisplayed ? 'fill-[#F4F0FF] stroke-[var(--color-accent)] stroke-[2px]' : 'fill-[#FFFFFF] stroke-[#E8E8E8] stroke-[1px]'}`}
                         />
                         
-                        {/* The content inside the slice, counter-rotated to stay upright */}
+                        {/* Text and Icon inside the slice */}
                         <motion.g 
-                          animate={{ rotate: -activeIndex * sliceAngle }}
+                          initial={false}
+                          animate={{ rotate: -(activeIndex * sliceAngle + rotationOffset) }}
                           transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
                           style={{ transformOrigin: `${centerPos.x}px ${centerPos.y}px` }}
                         >
@@ -251,14 +256,14 @@ export default function WhyChooseUs() {
                           >
                             <div className="w-full h-full flex flex-col items-center justify-center text-center">
                               <div className="flex items-center gap-2 mb-2">
-                                <span className={`text-[10px] font-bold tracking-widest transition-colors duration-500 ${isActive ? 'text-[var(--color-accent)]' : 'text-[#A0A0A0]'}`}>
+                                <span className={`text-[10px] font-bold tracking-widest transition-colors duration-500 ${isDisplayed ? 'text-[var(--color-accent)]' : 'text-[#A0A0A0]'}`}>
                                   0{i + 1}
                                 </span>
-                                <motion.div animate={{ scale: isActive ? 1.15 : 1 }} transition={{ duration: 0.45 }}>
-                                  <section.icon className={`w-5 h-5 transition-colors duration-500 ${isActive ? 'text-[var(--color-accent)]' : 'text-[#1A1A1A]'}`} strokeWidth={1.5} />
+                                <motion.div animate={{ scale: isDisplayed ? 1.15 : 1 }} transition={{ duration: 0.45 }}>
+                                  <section.icon className={`w-5 h-5 transition-colors duration-500 ${isDisplayed ? 'text-[var(--color-accent)]' : 'text-[#1A1A1A]'}`} strokeWidth={1.5} />
                                 </motion.div>
                               </div>
-                              <span className={`text-xs font-semibold uppercase tracking-wider whitespace-pre-line leading-tight transition-colors duration-500 ${isActive ? 'text-[#1A1A1A]' : 'text-[#666666]'}`}>
+                              <span className={`text-xs font-semibold uppercase tracking-wider whitespace-pre-line leading-tight transition-colors duration-500 ${isDisplayed ? 'text-[#1A1A1A]' : 'text-[#666666]'}`}>
                                 {section.title}
                               </span>
                             </div>
@@ -274,7 +279,7 @@ export default function WhyChooseUs() {
                 <circle cx={cx} cy={cy} r={rInner - 4} fill="#FFFFFF" stroke="#E8E8E8" strokeWidth="1" className="shadow-sm relative z-10" />
                 <foreignObject x={cx - 30} y={cy - 30} width="60" height="60" className="pointer-events-none z-20 relative">
                   <div className="w-full h-full flex items-center justify-center">
-                    <img src="/logo.png" alt="PIXIE WEBS" className="w-10 h-auto object-contain" />
+                    <img src="/logo.png" alt="PIXIE WEBS" className="w-16 h-auto object-contain" />
                   </div>
                 </foreignObject>
               </svg>
@@ -283,16 +288,16 @@ export default function WhyChooseUs() {
           </div>
 
           {/* RIGHT COLUMN: Content Card */}
-          <div className="w-full xl:w-[55%] flex items-center justify-center z-20 xl:min-h-[480px] relative shrink-0">
+          <div className="w-full xl:w-[55%] flex items-center justify-center xl:justify-start z-20 xl:min-h-[480px] relative shrink-0 mb-12 xl:mb-0">
             
             {/* Subtle Glow behind the card */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[var(--color-accent)]/15 blur-[100px] rounded-[40px] pointer-events-none z-0" />
 
-            <div className="relative w-full max-w-[450px] xl:max-w-[600px] bg-white rounded-[16px] xl:rounded-[28px] p-4 md:p-8 xl:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-[#E8E8E8] z-10 flex flex-col h-[380px] xl:h-[420px] justify-between overflow-hidden">
+            <div className="relative w-full max-w-[450px] xl:max-w-[600px] bg-white rounded-[16px] xl:rounded-[28px] p-4 md:p-8 xl:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-[#E8E8E8] z-10 flex flex-col h-auto md:h-[380px] xl:h-[420px] justify-between overflow-hidden">
               
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={activeIndex}
+                  key={displayIndex}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
@@ -336,7 +341,7 @@ export default function WhyChooseUs() {
                   {activeSection.title.replace('\n', ' ')}
                 </span>
                 <span className="text-[10px] md:text-[12px] xl:text-sm font-bold tracking-widest text-[#111111]">
-                  0{activeIndex + 1} <span className="text-[#A0A0A0] mx-1">/</span> 0{sections.length}
+                  0{displayIndex + 1} <span className="text-[#A0A0A0] mx-1">/</span> 0{sections.length}
                 </span>
               </div>
 

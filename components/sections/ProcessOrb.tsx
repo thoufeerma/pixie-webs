@@ -82,9 +82,39 @@ export default function ProcessOrb({ activeIndex = 0 }: { activeIndex?: number }
             filter: `brightness(${currentState.brightness}) saturate(${currentState.saturate})`
           }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
+          onPointerEnter={(e) => {
+            const canvas = ref.current?.querySelector('canvas');
+            if (canvas) {
+              canvas.dispatchEvent(new PointerEvent('pointerdown', {
+                pointerId: e.pointerId,
+                bubbles: true,
+                cancelable: true,
+                clientX: e.clientX,
+                clientY: e.clientY,
+                button: 0,
+                buttons: 1
+              }));
+            }
+          }}
+          onPointerLeave={(e) => {
+            const canvas = ref.current?.querySelector('canvas');
+            if (canvas) {
+              canvas.dispatchEvent(new PointerEvent('pointerup', {
+                pointerId: e.pointerId,
+                bubbles: true,
+                cancelable: true,
+                clientX: e.clientX,
+                clientY: e.clientY,
+                button: 0,
+                buttons: 0
+              }));
+            }
+          }}
         >
           {isInView && (
-            <Spline scene="/glassorb.splinecode" />
+            <Spline 
+              scene="/glassorb.splinecode" 
+            />
           )}
         </motion.div>
       </div>

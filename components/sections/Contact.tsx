@@ -30,7 +30,7 @@ export default function Contact() {
   const labelClasses = "absolute left-2 top-4 text-[var(--color-muted)] text-lg pointer-events-none premium-transition peer-focus:-top-3 peer-focus:text-sm peer-focus:text-[var(--color-accent)]";
 
   return (
-    <section id="contact" className="relative py-32 overflow-hidden w-full">
+    <section id="contact" className="relative py-16 md:py-32 overflow-hidden w-full">
       
       {/* Background Typography */}
       <div className="bg-typography">CONTACT</div>
@@ -43,7 +43,7 @@ export default function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1] }}
-            className="text-6xl md:text-8xl leading-[0.95] tracking-tighter font-medium mb-8"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl leading-[0.95] tracking-tighter font-medium mb-8"
           >
             Let's Build<br />Something<br />Great.
           </motion.h2>
@@ -52,7 +52,7 @@ export default function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1], delay: 0.2 }}
-            className="text-xl text-[var(--color-muted)] max-w-md"
+            className="text-base md:text-xl text-[var(--color-muted)] max-w-md"
           >
             We're ready to bring your vision to life. Fill out the form, and we'll connect via WhatsApp instantly.
           </motion.p>

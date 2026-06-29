@@ -44,7 +44,7 @@ export default function Hero() {
 
   return (
     <section 
-      className="relative min-h-[100vh] w-full pt-32 pb-8 overflow-hidden flex flex-col justify-between bg-[#F8F9FA]"
+      className="relative min-h-[100vh] w-full pt-28 md:pt-32 pb-8 overflow-hidden flex flex-col justify-between bg-[#F8F9FA]"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => { mouseX.set(0); mouseY.set(0); }}
     >
@@ -56,7 +56,7 @@ export default function Hero() {
         {/* Oversized Background Text */}
         <motion.div 
           style={{ x: bgX, y: bgY }}
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none z-0"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none z-0"
         >
           <span className="text-[25vw] font-bold text-[#E5E5E5] tracking-tighter leading-none select-none opacity-50 block whitespace-nowrap">
             PIXIE
@@ -79,7 +79,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1], delay: 0.3 }}
-            className="text-[12vw] sm:text-[10vw] lg:text-[5.5rem] xl:text-[6.5rem] leading-[0.95] tracking-tighter uppercase font-medium text-[#1A1A1A] mb-6 md:mb-8 w-full"
+            className="text-[11vw] sm:text-[10vw] lg:text-[5.5rem] xl:text-[6.5rem] leading-[0.95] tracking-tighter uppercase font-medium text-[#1A1A1A] mb-6 md:mb-8 w-full"
           >
             CRAFTING<br className="lg:hidden" /> DIGITAL<br />EXPERIENCES
           </motion.h1>
